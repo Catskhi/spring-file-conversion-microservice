@@ -18,18 +18,31 @@ import java.util.UUID;
 @Setter
 public class EmailModel {
 
-    private final long SerialVersionUID = 1L;
+    private static final long SerialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false)
     private UUID id;
+
+    @Column(nullable = false)
     private UUID userId;
+
+    @Column(nullable = false)
     private String emailFrom;
+
+    @Column(nullable = false)
     private String emailTo;
+
+    @Column(nullable = false)
     private String subject;
+
+    @Column(nullable = false, length = 5000, columnDefinition = "TEXT")
     private String body;
+
     private LocalDateTime sentAt;
+
+    @Enumerated(EnumType.STRING)
     private EmailStatus status;
 
 }
