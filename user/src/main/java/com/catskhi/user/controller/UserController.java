@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<UserDto> getUserById(String id) {
+    public ResponseEntity<UserDto> getUserById(@PathVariable UUID id) {
         UserModel user = userService.getUserById(id);
         if (user == null) {
             return ResponseEntity.notFound().build();
@@ -52,7 +53,7 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable String id, @Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable UUID id, @Valid @RequestBody UserDto userDto) {
         UserModel userDetails = UserMapper.toModel(userDto);
         UserModel updatedUser = userService.updateUser(id, userDetails);
         if (updatedUser == null) {
@@ -63,7 +64,7 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<Void> deleteUser(String id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
         UserModel deletedUser = userService.deleteUser(id);
         if (deletedUser == null) {
             return ResponseEntity.notFound().build();
