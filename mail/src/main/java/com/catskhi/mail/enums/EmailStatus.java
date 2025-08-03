@@ -1,4 +1,4 @@
-package com.catskhi.user.enums;
+package com.catskhi.mail.enums;
 
 public enum EmailStatus {
     SENT,
