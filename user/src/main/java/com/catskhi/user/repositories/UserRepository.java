@@ -3,6 +3,8 @@ package com.catskhi.user.repositories;
 import com.catskhi.user.domain.UserModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<UserModel, String> {
+import java.util.UUID;
+
+public interface UserRepository extends JpaRepository<UserModel, UUID> {
 
 }
