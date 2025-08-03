@@ -4,7 +4,7 @@ spring:
       enabled: ALWAYS
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/ms_email_ms
+    url: jdbc:postgresql://localhost:5433/ms_mail_ms
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
