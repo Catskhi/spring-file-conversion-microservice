@@ -5,6 +5,7 @@ import com.catskhi.mail.enums.EmailStatus;
 import com.catskhi.mail.repositories.EmailRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -17,13 +18,17 @@ public class EmailService {
     @Autowired
     private EmailRepository emailRepository;
 
+    @Value("EMAIL_USERNAME")
+    private String emailFrom;
+
     @Transactional
     public void sendAndSaveEmail(EmailModel emailModel) {
         emailModel.setStatus(EmailStatus.PENDING);
         try {
             SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(emailFrom);
             message.setTo(emailModel.getEmailTo());
-            message.setSubject(emailModel.getSubject());
+            message.setSubject(emailModel.getEmailSubject());
             message.setText(emailModel.getBody());
             mailSender.send(message);
             emailModel.setStatus(EmailStatus.SENT);
@@ -33,6 +38,5 @@ public class EmailService {
         } finally {
             emailRepository.save(emailModel);
         }
-        emailRepository.save(emailModel);
     }
 }
