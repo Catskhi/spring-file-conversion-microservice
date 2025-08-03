@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "users")
 @AllArgsConstructor
@@ -17,8 +19,7 @@ import lombok.Setter;
 public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", updatable = false, nullable = false)
-    private String id;
+    private UUID id;
 
     @NotBlank
     @Column(nullable = false)
@@ -28,4 +29,12 @@ public class UserModel {
     @Email
     @Column(unique = true, nullable = false)
     private String email;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
 }
