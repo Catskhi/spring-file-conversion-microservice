@@ -29,13 +29,10 @@ public class EmailModel {
     private UUID userId;
 
     @Column(nullable = false)
-    private String emailFrom;
-
-    @Column(nullable = false)
     private String emailTo;
 
     @Column(nullable = false)
-    private String subject;
+    private String emailSubject;
 
     @Column(nullable = false, length = 5000, columnDefinition = "TEXT")
     private String body;
