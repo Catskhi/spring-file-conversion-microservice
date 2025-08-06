@@ -2,6 +2,7 @@ package com.catskhi.mail.service;
 
 import com.catskhi.mail.domain.EmailModel;
 import com.catskhi.mail.enums.EmailStatus;
+import com.catskhi.mail.exception.EmailException;
 import com.catskhi.mail.repositories.EmailRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class EmailService {
             emailModel.setStatus(EmailStatus.SENT);
         } catch (Exception e) {
             emailModel.setStatus(EmailStatus.FAILED);
-            System.out.println("Failed to send email: " + e.getMessage());
+            throw new EmailException("Error sending email.");
         } finally {
             emailRepository.save(emailModel);
         }
