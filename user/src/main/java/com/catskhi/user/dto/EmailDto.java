@@ -3,9 +3,19 @@ package com.catskhi.user.dto;
 import java.util.UUID;
 
 public class EmailDto {
+    private UUID userId;
     private String emailTo;
     private String emailSubject;
     private String body;
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
+
 
     public String getEmailTo() {
         return emailTo;
