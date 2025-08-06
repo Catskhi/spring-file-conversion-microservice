@@ -13,4 +13,10 @@ public class ApplicationControllerAdvice {
     public String handleDataNotFoundException(DataNotFoundException ex) {
         return ex.getMessage();
     }
+
+    @ExceptionHandler(VideoUploadException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleVideoUploadException(VideoUploadException ex) {
+        return ex.getMessage();
+    }
 }
