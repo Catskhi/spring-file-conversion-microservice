@@ -21,17 +21,19 @@ public class VideoController {
     }
 
     @PostMapping("/videos/upload")
-    public ResponseEntity<String> uploadVideo(@RequestParam("file") MultipartFile file) {
-           if (file.isEmpty()) {
-               return ResponseEntity.badRequest().body("File is empty");
-           }
-           if (!file.getContentType().startsWith("video/")) {
-               return ResponseEntity.badRequest().body("File is not a video");
-           }
-           if (file.getSize() > 52428800) {
-                return ResponseEntity.badRequest().body("File size exceeds 50MB limit");
-           }
-           videoService.saveVideo(file);
-           return ResponseEntity.ok("Video uploaded successfully: " + file.getOriginalFilename());
+    public ResponseEntity<String> uploadVideo(
+            @RequestParam("userEmail") String userEmail,
+            @RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("File is empty");
+        }
+        if (!file.getContentType().startsWith("video/")) {
+            return ResponseEntity.badRequest().body("File is not a video");
+        }
+        if (file.getSize() > 52428800) {
+            return ResponseEntity.badRequest().body("File size exceeds 50MB limit");
+        }
+        videoService.saveVideo(userEmail, file);
+        return ResponseEntity.ok("Video uploaded successfully: " + file.getOriginalFilename());
     }
 }

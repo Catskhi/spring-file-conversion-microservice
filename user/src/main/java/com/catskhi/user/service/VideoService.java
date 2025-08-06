@@ -1,5 +1,6 @@
 package com.catskhi.user.service;
 
+import com.catskhi.user.dto.VideoDto;
 import com.catskhi.user.producer.VideoProducer;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class VideoService {
     }
 
     @Transactional
-    public String saveVideo(MultipartFile file) {
+    public String saveVideo(String userEmail, MultipartFile file) {
         String fileName = UUID.randomUUID() + ".mp4";
         String bucketName = "video-bucket";
         PutObjectRequest request = PutObjectRequest.builder()
@@ -40,7 +41,11 @@ public class VideoService {
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload video to S3: " + e.getMessage(), e);
         }
-        videoProducer.sendVideoProcessingEvent(fileName);
+        videoProducer.sendVideoProcessingEvent(VideoDto.builder()
+                        .userId(UUID.randomUUID())
+                        .UserEmail(userEmail)
+                        .videoId(fileName)
+                .build());
         return "Video saved successfully: " + file.getOriginalFilename();
 
     }
