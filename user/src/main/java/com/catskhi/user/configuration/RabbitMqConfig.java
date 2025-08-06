@@ -8,9 +8,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMqConfig {
     private final String queueName = "email-queue";
+    private final String videoProcessingQueue = "video-processing-queue";
 
-    public Queue queue() {
+    @Bean
+    public Queue userQueue() {
         return new Queue(queueName, true);
+    }
+
+    @Bean
+    public Queue videoProcessingQueue() {
+        return new Queue(videoProcessingQueue, true);
     }
 
     @Bean
