@@ -1,6 +1,7 @@
 package com.catskhi.user.service;
 
 import com.catskhi.user.domain.UserModel;
+import com.catskhi.user.exception.DataNotFoundException;
 import com.catskhi.user.producer.UserProducer;
 import com.catskhi.user.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -24,7 +25,8 @@ public class UserService {
     }
 
     public UserModel getUserById(UUID id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("User not found with id: " + id));
     }
 
     public List<UserModel> getAllUsers() {
@@ -44,14 +46,14 @@ public class UserService {
             user.setEmail(userDetails.getEmail());
             return userRepository.save(user);
         }
-        return null;
+        throw new DataNotFoundException("User not found with id: " + id);
     }
 
     public UserModel deleteUser(UUID id) {
-        UserModel user = userRepository.findById(id).orElse(null);
+        UserModel user = userRepository.findById(id).orElseThrow(() -> new DataNotFoundException("User not found with id: " + id));
         if (user != null) {
             userRepository.delete(user);
         }
-        return user;
+        throw new DataNotFoundException("User not found with id: " + id);
     }
 }
