@@ -23,7 +23,7 @@ public class UserProducer {
         dto.setBody("Hello " + userModel.getName() + ",\n\nThank you for registering with us!");
 
         rabbitTemplate.setMessageConverter(rabbitMqConfig.jackson2JsonMessageConverter());
-        rabbitTemplate.convertAndSend(rabbitMqConfig.queue().getName(), dto);
+        rabbitTemplate.convertAndSend(rabbitMqConfig.userQueue().getName(), dto);
         System.out.println(" [x] Sent: '" + dto + "'");
     }
 }
