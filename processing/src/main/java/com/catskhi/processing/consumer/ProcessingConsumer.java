@@ -1,5 +1,6 @@
 package com.catskhi.processing.consumer;
 
+import com.catskhi.processing.dto.VideoDto;
 import com.catskhi.processing.service.ProcessingService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,9 @@ public class ProcessingConsumer {
     }
 
     @RabbitListener(queues = "video-processing-queue")
-    public void consumeVideoProcessingQueue(String videoId) {
-        System.out.println("Received message from video-processing-queue: " + videoId);
-        processingService.processVideo(videoId);
-        System.out.println("Processed video with ID: " + videoId);
+    public void consumeVideoProcessingQueue(VideoDto videoDto) {
+        System.out.println("Received message from video-processing-queue: " + videoDto.videoId());
+        processingService.processVideo(videoDto);
+        System.out.println("Processed video with ID: " + videoDto.videoId());
     }
 }
