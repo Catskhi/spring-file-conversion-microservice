@@ -1,5 +1,7 @@
 package com.catskhi.processing.service;
 
+import com.catskhi.processing.dto.VideoDto;
+import com.catskhi.processing.producer.VideoEmailProducer;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,31 +23,35 @@ public class ProcessingService {
     @Autowired
     private final S3Client s3Client;
 
-    public ProcessingService(S3Client s3Client) {
+    @Autowired
+    private final VideoEmailProducer videoEmailProducer;
+
+    public ProcessingService(S3Client s3Client, VideoEmailProducer videoEmailProducer) {
         this.s3Client = s3Client;
+        this.videoEmailProducer = videoEmailProducer;
     }
 
     @Transactional
-    public void processVideo(String videoId) {
-        System.out.println("Processing video with ID: " + videoId);
+    public void processVideo(VideoDto videoDto) {
+        System.out.println("Processing video with ID: " + videoDto.videoId());
         File tempMp4 = null;
         try {
-            tempMp4 = Files.createTempFile("video-" + videoId, ".mp4").toFile();
+            tempMp4 = Files.createTempFile("video-" + videoDto.videoId(), ".mp4").toFile();
             ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(
-                    GetObjectRequest.builder().bucket("video-bucket").key(videoId).build());
+                    GetObjectRequest.builder().bucket("video-bucket").key(videoDto.videoId()).build());
             FileOutputStream fileOutputStream = new FileOutputStream(tempMp4);
             s3Object.transferTo(fileOutputStream);
             fileOutputStream.close();
         } catch (Exception e) {
             System.err.println("Error downloading video: " + e.getMessage());
-            throw new RuntimeException("Failed to process video with ID: " + videoId, e);
+            throw new RuntimeException("Failed to process video with ID: " + videoDto.videoId(), e);
         }
 
         File tempMp3 = null;
         try {
             tempMp3 = Files.createTempFile("audio-" + UUID.randomUUID(), ".mp3").toFile();
             ProcessBuilder pb = new ProcessBuilder(
-                    "ffmpeg", "-y", "-i", tempMp3.getAbsolutePath(), "-q:a", "0", "-map", "a", tempMp3.getAbsolutePath());
+                    "ffmpeg", "-y", "-i", tempMp4.getAbsolutePath(), "-q:a", "0", "-map", "a", tempMp3.getAbsolutePath());
             pb.inheritIO();
             Process process = pb.start();
             int exitCode = process.waitFor();
@@ -54,7 +60,7 @@ public class ProcessingService {
             }
             PutObjectRequest request = PutObjectRequest.builder()
                     .bucket("audio-bucket")
-                    .key(videoId + ".mp3")
+                    .key(videoDto.videoId().replace(".mp4", "") + ".mp3")
                     .contentType("audio/mpeg")
                     .contentLength(tempMp3.length())
                     .build();
@@ -62,7 +68,7 @@ public class ProcessingService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
-            throw new RuntimeException("Video processing interrupted for ID: " + videoId, e);
+            throw new RuntimeException("Video processing interrupted for ID: " + videoDto.videoId(), e);
         } finally {
             if (tempMp4 != null && tempMp4.exists()) {
                 if (!tempMp4.delete()) {
@@ -75,6 +81,8 @@ public class ProcessingService {
                 }
             }
         }
-        System.out.println("Video processing completed for ID: " + videoId);
+        System.out.println("Video processing completed for ID: " + videoDto.videoId());
+        videoEmailProducer.sendVideoProcessingDoneEmail(videoDto,
+                "http://localhost:4566/audio-bucket/" + videoDto.videoId().replace(".mp4", "") + ".mp3");
     }
 }
