@@ -41,6 +41,11 @@ spring:
 server:
   port: 8080
 
+api:
+  security:
+    token:
+      secret: "${JWT_SECRET:defaultSecretValue}"
+
 aws:
   access-key: test
   secret-key: test

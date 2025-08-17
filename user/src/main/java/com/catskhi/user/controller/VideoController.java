@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.catskhi.user.domain.UserModel;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +24,7 @@ public class VideoController {
 
     @PostMapping("/videos/upload")
     public ResponseEntity<String> uploadVideo(
-            @RequestParam("userEmail") String userEmail,
+            @AuthenticationPrincipal UserModel user,
             @RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("File is empty");
@@ -30,10 +32,10 @@ public class VideoController {
         if (!file.getContentType().startsWith("video/")) {
             return ResponseEntity.badRequest().body("File is not a video");
         }
-        if (file.getSize() > 52428800) {
+        if (file.getSize() > 52428800) { // 50MB
             return ResponseEntity.badRequest().body("File size exceeds 50MB limit");
         }
-        videoService.saveVideo(userEmail, file);
+        videoService.saveVideo(user.getId(), user.getEmail(), file);
         return ResponseEntity.ok("Video uploaded successfully: " + file.getOriginalFilename());
     }
 }
