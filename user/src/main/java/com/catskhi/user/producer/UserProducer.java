@@ -19,11 +19,13 @@ public class UserProducer {
     private RabbitMqConfig rabbitMqConfig;
 
     public void sendUserCreateEvent(UserModel userModel) {
-        EmailDto dto = new EmailDto();
-        dto.setUserId(userModel.getId());
-        dto.setEmailTo(userModel.getEmail());
-        dto.setEmailSubject("Welcome to the application!");
-        dto.setBody("Hello " + userModel.getName() + ",\n\nThank you for registering with us!");
+        EmailDto dto = new EmailDto(
+                null,
+                userModel.getId(),
+                userModel.getEmail(),
+                "Welcome to the application!",
+                "Hello " + userModel.getName() + ",\n\nThank you for registering with us!"
+        );
 
         rabbitTemplate.setMessageConverter(rabbitMqConfig.jackson2JsonMessageConverter());
         rabbitTemplate.convertAndSend(rabbitMqConfig.emailExchange().getName(), "user-created", dto);

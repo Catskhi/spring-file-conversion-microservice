@@ -27,7 +27,7 @@ public class VideoService {
     }
 
     @Transactional
-    public String saveVideo(String userEmail, MultipartFile file) {
+    public String saveVideo(UUID userId, String userEmail, MultipartFile file) {
         String fileName = UUID.randomUUID() + ".mp4";
         String bucketName = "video-bucket";
         PutObjectRequest request = PutObjectRequest.builder()
@@ -42,7 +42,8 @@ public class VideoService {
             throw new RuntimeException("Failed to upload video to S3: " + e.getMessage(), e);
         }
         videoProducer.sendVideoProcessingEvent(VideoDto.builder()
-                        .userId(UUID.randomUUID())
+                        .userId(userId
+                        )
                         .UserEmail(userEmail)
                         .videoId(fileName)
                 .build());
